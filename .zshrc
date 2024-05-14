@@ -112,7 +112,6 @@ source $ZSH/oh-my-zsh.sh
 # Environment variables
 . ~/.private_envs
 
-export GIT_EDITOR="nvim"
 
 # NVM setup
 # source /usr/share/nvm/init-nvm.sh
@@ -190,3 +189,23 @@ case ":$PATH:" in
   *) export PATH="$PNPM_HOME:$PATH" ;;
 esac
 # pnpm end
+
+# Docker
+removecontainers() {
+  docker stop $(docker ps -aq)
+  docker rm $(docker ps -aq)
+}
+
+armageddon() {
+  removecontainers
+docker network prune -f
+docker rmi -f $(docker images --filter dangling=true -qa)
+docker volume rm $(docker volume ls --filter dangling=true -q)
+docker rmi -f $(docker images -qa)
+}
+
+# git config 
+export GIT_EDITOR="vim"
+GITHUB_USER=frederickmannings
+echo "machine github.com login $GITHUB_USER password $GITHUB_TOKEN" > ~/.netrc
+chmod 600 ~/.netrc
